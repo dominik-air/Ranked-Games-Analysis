@@ -1,1 +1,7 @@
 .venv
+.ipynb_checkpoints
+
+# exclude STAN generated litter
+models/
+# besides the model definitions
+!models/*.stan
