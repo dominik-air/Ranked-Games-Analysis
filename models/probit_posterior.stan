@@ -21,10 +21,12 @@ model {
 }
 
 generated quantities {
+  vector[N] log_lik;
   int<lower=0, upper=1> gameWon_pred[N];
   for (n in 1:N) {
     real eta = alpha + beta_gold * goldDiff[n] + beta_exp * expDiff[n];
     real p = Phi(eta);
+    log_lik[n] = bernoulli_lpmf(gameWon[n]| p);
     gameWon_pred[n] = bernoulli_rng(p);
   }
 }
