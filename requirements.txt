@@ -4,3 +4,4 @@ seaborn
 cmdstanpy
 notebook
 jupyter
+arviz
