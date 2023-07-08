@@ -2,6 +2,7 @@ data {
   int<lower=0> N;
   real goldDiff[N];
   real expDiff[N];
+  real DAKDA[N];
   int<lower=0, upper=1> gameWon[N]; 
 }
 
@@ -9,24 +10,35 @@ parameters {
   real alpha;
   real beta_gold;
   real beta_exp;
+  real beta_dakda;
+}
+
+transformed parameters {
+  vector[N] eta;
+  for (n in 1:N) {
+    eta[n] = alpha + beta_gold * goldDiff[n] + beta_exp * expDiff[n] + beta_dakda * DAKDA[n];
+  }
+  vector[N] p;
+  p = inv_logit(eta);
 }
 
 model {
   alpha ~ normal(0, 1);
   beta_gold ~ normal(0, 1);
   beta_exp ~ normal(0, 1);
+  beta_dakda ~ normal(0, 1);
 
   for (n in 1:N) {
-    real eta = alpha + beta_gold * goldDiff[n] + beta_exp * expDiff[n];
-    gameWon[n] ~ bernoulli_logit(eta);
+    gameWon[n] ~ bernoulli(p[n]);
   }
 }
 
 generated quantities {
+  vector[N] log_lik;
   int gameWon_pred[N];  
 
   for (n in 1:N) {
-    real eta = alpha + beta_gold * goldDiff[n] + beta_exp * expDiff[n];
-    gameWon_pred[n] = bernoulli_logit_rng(eta);
+    log_lik[n] = bernoulli_lpmf(gameWon[n]| p[n]);
+    gameWon_pred[n] = bernoulli_rng(p[n]);
   }
 }
