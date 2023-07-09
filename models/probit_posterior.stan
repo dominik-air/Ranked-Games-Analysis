@@ -20,14 +20,9 @@ parameters {
 }
 
 transformed parameters {
-  vector[N] eta_gold;
-  vector[N] eta_exp;
   vector[N] eta;
-  
   for (n in 1:N) {
-    eta_gold[n] = beta_dakda * DAKDA[n] + beta_em * EMDiff[n] + beta_minions * minionsDiff[n] + beta_towers * towersDiff[n];
-    eta_exp[n] = beta_dakda * DAKDA[n] + beta_em * EMDiff[n] + beta_minions * minionsDiff[n];
-    eta[n] = alpha + beta_gold * (goldDiff[n] - eta_gold[n]) + beta_exp * (expDiff[n] - eta_exp[n]);
+    eta[n] = alpha + beta_gold * goldDiff[n] + beta_exp * expDiff[n] + beta_dakda * DAKDA[n] + beta_em * EMDiff[n] + beta_minions * minionsDiff[n] + beta_towers * towersDiff[n];
   }
   vector[N] p;
   p = Phi(eta);
